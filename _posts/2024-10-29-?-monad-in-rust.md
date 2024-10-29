@@ -102,3 +102,23 @@ fn third_parent(dir: Directory) -> Option<Directory> {
   Some(d3)
 }
 ```
+마찬가지로 `fn get_next_line() -> Result<String, io::Error>`이 있을 때, 이와 같이 작성할 수 있지요:
+```rust
+fn read3lines() -> Result<String, io::Error> {
+  let s1 = get_next_line()?;
+  let s2 = get_next_line()?;
+  let s3 = get_next_line()?;
+  Ok(format!("{}{}{}", s1, s2, s3))
+}
+```
+여기서 바로 `?` 연산자가 바로 모나드의 역할을 그대로 하고 있습니다. 그러면 궁금하지 않습니까? 어떻게 `?`같은 것이 러스트 코드일까요? 특수 문법일까요? 그것도 맞지만, `Monad`와 비슷한 트레잇이 존재합니다. 바로 `Try`입니다.
+```rust
+pub trait Try: FromResidual {
+    type Output;
+    type Residual;
+
+    fn from_output(output: Self::Output) -> Self;
+    fn branch(self) -> ControlFlow<Self::Residual, Self::Output>;
+}
+```
+여기서 `branch` 메서드가 바로 일찍 반환할지, 아니면 값을 추출해서 계속 이어나갈지를 결정합니다.
